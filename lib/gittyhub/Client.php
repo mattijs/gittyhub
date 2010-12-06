@@ -179,7 +179,7 @@ class Client
     {
         // Check if an instance is available
         if (array_key_exists($name, $this->instances)) {
-            return $this->$instances[$name];
+            return $this->instances[$name];
         }
         
         // Check if the extension is registered
