@@ -22,18 +22,16 @@ foreach ($repository as $key => $value) {
     echo str_pad($key, 15) . ': ' . $value . "\n";
 }
 
-// Reconfigure the client to authenticate to retreive private repository information
+// Reconfigure the client to authenticate and retreive private repository information
 $client->configure(array(
     'login'    => 'USERNAME',    // The username to authenticate with
     'password' => 'TEH_S3CRET',  // The password for authentication
     'token'    => true,          // If the password is a token
 ));
 
-// The name of the repository owner defaults to the configure login
-// even if no password or token is used to authenticate
-$info = $client->repository('private_or_public_repository_name');
-$repository = (array) $info->decoded()->repository;
+$info = $client->repository->info('private_repository_name');
+$privateRepository = (array) $info->decoded()->repository;
 
-foreach ($repository as $key => $value) {
+foreach ($privateRepository as $key => $value) {
     echo str_pad($key, 15) . ': ' . $value . "\n";
 }
