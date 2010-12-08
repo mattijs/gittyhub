@@ -1,6 +1,6 @@
 <?php
 /**
- * Repository.php
+ * Commits.php
  *
  * @package     Gittyhub
  * @subpackage  Extension
