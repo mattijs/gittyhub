@@ -13,7 +13,7 @@ namespace gittyhub\extension;
 use \gittyhub\Extension as Extension;
 
 /**
- * Implementation of the Github Repository API
+ * Gittyhub extension for interaction with the Github Repository API
  * @see http://develop.github.com/p/repo.html
  */
 class Repository extends Extension
@@ -39,9 +39,10 @@ class Repository extends Extension
     /** **/
     
     /**
-     * Search repositories. The query is url encoded.
-     * @param string $query
-     * @return mixed
+     * Search repositories. The search query is url encoded before sending it to 
+     * the Github API.
+     * @param string $query The search query
+     * @return Response     The response received from the Github API
      */
     public function search($query)
     {
@@ -49,7 +50,6 @@ class Repository extends Extension
             'q' => url_encode($query),
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
@@ -57,11 +57,11 @@ class Repository extends Extension
     
     /**
      * Show repository information. The repository name is mandatory, the user 
-     * is optional. If no user is specified the configured user from the Client 
+     * is optional. If no user is specified the configured login from the Client 
      * will be used.
-     * @param string $repository
-     * @param string $user
-     * @return mixed
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
      */
     public function info($repository, $user = null)
     {
@@ -70,17 +70,16 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
     /**
-     * List all repositories for a user.
-     * If no user is specified the configured user from the Client will be used.
-     * @param string $user
-     * @return mixed
+     * List all repositories for a user. The user is optional. If no user is 
+     * specified the configured login from the Client will be used.
+     * @param string $user  The user to list the repositories for
+     * @return Response     The response reveived from the Github API
      */
     public function all($user = null)
     {
@@ -88,12 +87,19 @@ class Repository extends Extension
             'user' => $user ?: $this->client->config('login'),
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
+    /**
+     * Show collaborators for a repository. The repository name is mandatory, 
+     * the user is optional. If no user is specified the configured login from 
+     * the Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
+     */
     public function collaborators($repository, $user = null)
     {
         $endpoint = $this->endpoint('collaborators', array(
@@ -101,12 +107,19 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
+    /**
+     * Show contributers for a repository. The repository name is mandatory, 
+     * the user is optional. If no user is specified the configured login from 
+     * the Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
+     */
     public function contributers($repository, $user = null)
     {
         $endpoint = $this->endpoint('contributors', array(
@@ -114,12 +127,19 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
+    /**
+     * Show watchers for a repository. The repository name is mandatory, the 
+     * user is optional. If no user is specified the configured login from the 
+     * Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
+     */
     public function watchers($repository, $user = null)
     {
         $endpoint = $this->endpoint('watchers', array(
@@ -127,12 +147,19 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
+    /**
+     * Show the network for a repository. The repository name is mandatory, the 
+     * user is optional. If no user is specified the configured login from the 
+     * Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
+     */
     public function network($repository, $user = null)
     {
         $endpoint = $this->endpoint('network', array(
@@ -140,12 +167,19 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
+    /**
+     * Show the languages used in a repository. The repository name is mandatory, 
+     * the user is optional. If no user is specified the configured login from 
+     * the Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
+     */
     public function languages($repository, $user = null)
     {
         $endpoint = $this->endpoint('languages', array(
@@ -153,19 +187,18 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
         
         return $response;
     }
     
     /**
-     * Show repository tags. The repository name is mandatory, the user name is 
-     * optional. If no user is specified the configured user from the Client 
-     * will be used.
-     * @param string $repository
-     * @param string $user
-     * @return mixed
+     * Show the tags for a repository. The repository name is mandatory, the 
+     * user is optional. If no user is specified the configured login from the 
+     * Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
      */
     public function tags($repository, $user = null)
     {
@@ -174,12 +207,19 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
 
         return $response;
     }
     
+    /**
+     * Show the branches for a repositury. The repository name is mandatory, the 
+     * user is optional. If no user is specified the configured login from the 
+     * Client will be used.
+     * @param string $repository    The repository to contact
+     * @param string $user          The owner of the repository
+     * @return Response             The response received from the Github API
+     */
     public function branches($repository, $user = null)
     {
         $endpoint = $this->endpoint('branches', array(
@@ -187,7 +227,6 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        // Send a request to the Github API
         $response = $this->client->request($endpoint);
 
         return $response;
