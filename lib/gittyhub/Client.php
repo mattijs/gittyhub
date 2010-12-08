@@ -42,6 +42,7 @@ class Client
      */
     public $extensions = array(
         'repository' => '\gittyhub\extension\Repository',
+        'commits'    => '\gittyhub\extension\Commits',
     );
     
     /**
@@ -49,12 +50,6 @@ class Client
      * @var array[] \gittyhub\api\Extension
      */
     protected $instances = array();
-    
-    /**
-     * The socket adapter instance for sending HTTP requests
-     * @param \lithium\net\Socket
-     */
-    protected $adapter = null;
     
     /** **/
     
@@ -149,23 +144,23 @@ class Client
      */
     protected function send(Request $request)
     {
-        // Check if an adapter was instantiated
-        if (null === $this->adapter) {
-            $adapterClass = $this->config('adapter');
-            $this->adapter = new $adapterClass(array(
-                'scheme' => $this->config('protocol'),
-                'host'   => $this->config('host'),
-                'port'   => $this->config('port'),
-            ));
-        }
+        // Create a new adapter for sending the request
+        $adapterClass = $this->config('adapter');
+        $adapter = new $adapterClass(array(
+            'scheme' => $this->config('protocol'),
+            'host'   => $this->config('host'),
+            'port'   => $this->config('port'),
+        ));
         
         // Use the adapter to send the Request
-        $adapter = $this->adapter;
         $adapter->open();
         $response = $adapter->send($request, array(
             'response' => '\gittyhub\Response'
         ));
         $adapter->close();
+        
+        // Destroy the adapter
+        unset($adapter);
         
         // Return the response
         return $response;
