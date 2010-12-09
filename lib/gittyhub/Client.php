@@ -9,7 +9,9 @@
  */
 
 namespace gittyhub;
-use \lithium\util\String as String;
+use \lithium\storage\Cache as Cache,
+    \lithium\util\Set as Set,
+    \lithium\util\String as String;
 
 /**
  * API client for Github
@@ -34,6 +36,12 @@ class Client
         'password'  => '',
         'token'     => true,
         'adapter'   => '\lithium\net\socket\Curl',
+        'caching'   => array(
+            'enabled'  => true,
+            'adapter'  => '\lithium\storage\cache\adapter\File',
+            'path'     => '',
+            'lifetime' => '+5 minutes',
+        )
     );
     
     /**
@@ -69,7 +77,24 @@ class Client
      */
     public function configure(array $options)
     {
-        $this->config = $options + $this->config;
+        // Update configuration array
+        $this->config = Set::merge($this->config, $options);
+        
+        // Check for caching configuration
+        if (false !== $this->config('caching.enabled')) {
+            $cachePath = $this->config('caching.path');
+            if (empty($cachePath)) {
+                throw new \Exception('Caching is enabled but no path is configured');
+            }
+            Cache::config(array(
+                'request' => array(
+                    'adapter' => $this->config('caching.adapter'),
+                    'path'    => $cachePath,
+                    'expiry'  => $this->config('caching.lifetime'),
+                )
+            ));
+        }
+        
         return $this->config;
     }
     
@@ -90,9 +115,14 @@ class Client
         }
         
         // Check if the config key exists
-        if (array_key_exists($key, $this->config)) {
-            return $this->config[$key];
+        $path = '/' . str_replace('.', '/', $key);
+        $matches = Set::extract($this->config, $path);
+        if (!empty($matches)) {
+            return array_shift($matches);
         }
+        /*if (array_key_exists($key, $this->config)) {
+            return $this->config[$key];
+        }*/
         
         // Return the default, key was not found
         return $default;
@@ -144,6 +174,20 @@ class Client
      */
     protected function send(Request $request)
     {
+        // Generate request fingerprint
+        $cacheKey = \sha1($request->to('url'));
+        
+        // Check if caching is enabled
+        if (false !== $this->config('caching.enabled')) {
+            $cached = Cache::read('request', $cacheKey);
+            if (null !== $cached && false !== $cached) {
+                // Load the cached result
+                return new \gittyhub\Response(array(
+                    'message' => $cached
+                ));
+            }
+        }
+
         // Create a new adapter for sending the request
         $adapterClass = $this->config('adapter');
         $adapter = new $adapterClass(array(
@@ -151,6 +195,7 @@ class Client
             'host'   => $this->config('host'),
             'port'   => $this->config('port'),
         ));
+        $adapter->timeout(30);
         
         // Use the adapter to send the Request
         $adapter->open();
@@ -161,6 +206,18 @@ class Client
         
         // Destroy the adapter
         unset($adapter);
+        
+        // Check the response
+        if (null === $response || false === $response) {
+            throw new \Exception("Could not complete the request to '{$request->to('url')}'");
+        }
+        
+        // Check if the response needs to be cached
+        if (false !== $this->config('caching.enabled')) {
+            // Reconstruct the HTTP response message
+            $message = implode("\r\n", $response->headers()) . "\r\n\r\n" . $response->body();
+            Cache::write('request', $cacheKey, $message);
+        }
         
         // Return the response
         return $response;
