@@ -114,15 +114,17 @@ class Client
             return $this->config;
         }
         
-        // Check if the config key exists
+        // Check if the config key exists with dots
+        if (array_key_exists($key, $this->config)) {
+            return $this->config[$key];
+        }
+        
+        // Check if the config key exists as a path
         $path = '/' . str_replace('.', '/', $key);
         $matches = Set::extract($this->config, $path);
         if (!empty($matches)) {
             return array_shift($matches);
         }
-        /*if (array_key_exists($key, $this->config)) {
-            return $this->config[$key];
-        }*/
         
         // Return the default, key was not found
         return $default;
