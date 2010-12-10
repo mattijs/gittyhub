@@ -37,7 +37,7 @@ class Client
         'token'     => true,
         'adapter'   => '\lithium\net\socket\Curl',
         'caching'   => array(
-            'enabled'  => true,
+            'enabled'  => false,
             'adapter'  => '\lithium\storage\cache\adapter\File',
             'path'     => '',
             'lifetime' => '+5 minutes',
@@ -81,7 +81,7 @@ class Client
         $this->config = Set::merge($this->config, $options);
         
         // Check for caching configuration
-        if (false !== $this->config('caching.enabled')) {
+        if (false !== $this->config('caching.enabled', false)) {
             $cachePath = $this->config('caching.path');
             if (empty($cachePath)) {
                 throw new \Exception('Caching is enabled but no path is configured');
@@ -180,7 +180,7 @@ class Client
         $cacheKey = \sha1($request->to('url'));
         
         // Check if caching is enabled
-        if (false !== $this->config('caching.enabled')) {
+        if (false !== $this->config('caching.enabled', false)) {
             $cached = Cache::read('request', $cacheKey);
             if (null !== $cached && false !== $cached) {
                 // Load the cached result
@@ -215,7 +215,7 @@ class Client
         }
         
         // Check if the response needs to be cached
-        if (false !== $this->config('caching.enabled')) {
+        if (false !== $this->config('caching.enabled', false)) {
             // Reconstruct the HTTP response message
             $message = implode("\r\n", $response->headers()) . "\r\n\r\n" . $response->body();
             Cache::write('request', $cacheKey, $message);
