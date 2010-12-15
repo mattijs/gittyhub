@@ -49,8 +49,9 @@ class Client
      * @var array[string] string
      */
     public $extensions = array(
-        'repository' => '\gittyhub\extension\Repository',
-        'commits'    => '\gittyhub\extension\Commits',
+        'repository'   => '\gittyhub\extension\Repository',
+        'commits'      => '\gittyhub\extension\Commits',
+        'organization' => '\gittyhub\extension\Organization',
     );
     
     /**
