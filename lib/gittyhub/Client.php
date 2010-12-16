@@ -132,24 +132,15 @@ class Client
     }
     
     /**
-     * Request a part of the Github API. Only the endpoint of the API section 
-     * has to be provided. All other configuration is done by the Client, like 
-     * the bas url, protocol, port and authorisation. This has to be configured 
-     * in advance.
-     * @param string $endpoint
-     * @return Response
+     * Send a GET request to the GitHub API. The endpoint is the relative URL 
+     * to the API root. The complete path will be build by the Client.
+     * @param string $endpoint  The endpoint to contact
+     * @return Response         The response received from the GitHub API
      */
-    public function request($endpoint)
+    public function get($endpoint)
     {
-        // Build the path
-        $path = String::insert(
-            '/{:base}/{:format}/{:endpoint}',
-            array (
-                'base'     => ltrim($this->config('basePath'), '/'),
-                'format'   => $this->config('format', 'json'),
-                'endpoint' => ltrim($endpoint, '/'),
-            )
-        );
+        // Build the complete path for the endpoint
+        $path = $this->buildPath($endpoint);
         
         // Create a new Request
         $request = new Request(array(
@@ -159,15 +150,118 @@ class Client
             'path'     => $path,
         ));
         
-        // Handle authentication
-        $request->auth(
-            $this->config('login', null),
-            $this->config('password', null),
-            $this->config('token', false)
-        );
+        // Send the request
+        return $this->send($request);
+    }
+    
+    /**
+     * Send a POST request to the GitHub API. The endpoint is the relative URL 
+     * to the API root. The complete path will be build by the Client. 
+     * Data is an array containing the data to set as the POST body. The data is 
+     * JSON encoded.
+     * @param string $endpoint      The endpoint to contact 
+     * @param array $data           The data to send in the POST body
+     * @return \gittyhub\Response   The response received from the GitHub API
+     */
+    public function post($endpoint, array $data = array())
+    {
+        // Prepare path and data
+        $path = $this->buildPath($endpoint);
+        $data = \json_encode($data);
+        
+        // Build the request for the POST
+        $request = new Request(array(
+            'scheme'   => $this->config('protocol'),
+            'host'     => $this->config('host'),
+            'port'     => $this->config('port'),
+            'path'     => $path,
+            'method'   => 'POST',
+            'headers'  => array(
+                'Content-Type' => 'application/json'
+            ),
+            'body' => array(
+                $data
+            )
+        ));
         
         // Send the request
         return $this->send($request);
+    }
+    
+    /**
+     * Send a PUT request to the GitHub API. The endpoint is the relative URL 
+     * to the API root. The complete path will be build by the Client. 
+     * Data is an array containing the data to set as the POST body. The data is 
+     * JSON encoded.
+     * @param string $endpoint      The endpoint to contact 
+     * @param array $data           The data to send in the POST body
+     * @return \gittyhub\Response   The response received from the GitHub API
+     */
+    public function put($endpoint, array $data = array())
+    {
+        // Prepare path and data
+        $path = $this->buildPath($endpoint);
+        $data = \json_encode($data);
+        
+        // Build the request for the PUT
+        $request = new Request(array(
+            'scheme'   => $this->config('protocol'),
+            'host'     => $this->config('host'),
+            'port'     => $this->config('port'),
+            'path'     => $path,
+            'method'   => 'PUT',
+            'headers'  => array(
+                'Content-Type' => 'application/json'
+            ),
+            'body' => array(
+                $data
+            )
+        ));
+        
+        // Send the request
+        $this->send($request);
+    }
+    
+    /**
+     * Send a PUT request to the GitHub API. The endpoint is the relative URL 
+     * to the API root. The complete path will be build by the Client. 
+     * @param string $endpoint      The endpoint to contact 
+     * @return \gittyhub\Response   The response received from the GitHub API
+     */
+    public function delete($endpoint)
+    {
+        // Build the path
+        $path = $this->endpoint($endpoint);
+        
+        // Build the request for the DELETE
+        $request = new Request(array(
+            'scheme'   => $this->config('protocol'),
+            'host'     => $this->config('host'),
+            'port'     => $this->config('port'),
+            'path'     => $path,
+            'method'   => 'DELETE',
+        ));
+        
+        // Send the request
+        $this->send($request);
+    }
+    
+    /**
+     * Build a complete path to the API for an endpoint
+     * @param string $endpoint  The endpoint for the path
+     * @return string           The complete path
+     */
+    public function buildPath($endpoint)
+    {
+        $path = String::insert(
+            '/{:base}/{:format}/{:endpoint}',
+            array (
+                'base'     => ltrim($this->config('basePath'), '/'),
+                'format'   => $this->config('format', 'json'),
+                'endpoint' => ltrim($endpoint, '/'),
+            )
+        );
+        return $path;
     }
     
     /**
@@ -190,7 +284,14 @@ class Client
                 ));
             }
         }
-
+        
+        // Handle request authentication
+        $request->auth(
+            $this->config('login', null),
+            $this->config('password', null),
+            $this->config('token', true)
+        );
+        
         // Create a new adapter for sending the request
         $adapterClass = $this->config('adapter');
         $adapter = new $adapterClass(array(
