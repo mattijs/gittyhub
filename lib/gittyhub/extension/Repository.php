@@ -50,7 +50,7 @@ class Repository extends Extension
             'q' => url_encode($query),
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -70,7 +70,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -87,7 +87,7 @@ class Repository extends Extension
             'user' => $user ?: $this->client->config('login'),
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -107,7 +107,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -127,7 +127,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -147,7 +147,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -167,7 +167,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -187,7 +187,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -207,7 +207,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
 
         return $response;
     }
@@ -227,7 +227,7 @@ class Repository extends Extension
             'repo' => $repository,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
 
         return $response;
     }

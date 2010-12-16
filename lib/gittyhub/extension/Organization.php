@@ -53,7 +53,7 @@ class Organization extends Extension
             'org' => $organization,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -69,7 +69,7 @@ class Organization extends Extension
             'org' => $organization
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -85,7 +85,7 @@ class Organization extends Extension
             'org' => $organization,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -101,7 +101,7 @@ class Organization extends Extension
             'org' => $organization
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -118,7 +118,7 @@ class Organization extends Extension
             'user' => $user ?: $this->client->config('login')
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }

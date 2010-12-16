@@ -50,7 +50,7 @@ class Commits extends Extension
             'path'       => ltrim($path, '/'),
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
@@ -71,7 +71,7 @@ class Commits extends Extension
             'sha'        => $sha,
         ));
         
-        $response = $this->client->request($endpoint);
+        $response = $this->client->get($endpoint);
         
         return $response;
     }
